@@ -1,5 +1,11 @@
 {
-	"get_login_data_from_container": {
-		"message": "Login-Daten beziehen von"
-	}
+  "get_login_data_from_container": {
+    "message": "Login-Daten beziehen von"
+  },
+  "remove_login_data": {
+    "message": "Login-Daten entfernen"
+  },
+  "both": {
+    "message": "beide"
+  }
 }

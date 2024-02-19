@@ -1,5 +1,5 @@
 import type Browser from "webextension-polyfill";
-import { TabMenuCookies } from "../../Entities";
+import { TabMenuCookies, TabMenuRemoveCookies } from "../../Entities";
 
 export function menusOnShown(
 	info: Browser.Menus.OnShownInfoType,
@@ -7,4 +7,5 @@ export function menusOnShown(
 ) {
 	console.info("browser.menus.onShown");
 	TabMenuCookies.update();
+	TabMenuRemoveCookies.update();
 }

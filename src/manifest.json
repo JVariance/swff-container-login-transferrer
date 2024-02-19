@@ -11,7 +11,7 @@
 		"128": "icon/icon-light.svg",
 		"256": "icon/icon-light.svg"
 	},
-	"{{firefox}}.permissions": [
+	"permissions": [
 		"<all_urls>",
 		"activeTab",
 		"browsingData",
@@ -25,15 +25,16 @@
 		"tabs"
 	],
 	"commands": {},
-	"{{firefox}}.options_ui": {
+	"options_ui": {
 		"page": "src/pages/Options/options.html",
 		"open_in_tab": true
 	},
-	"{{firefox}}.browser_specific_settings": {
+	"browser_specific_settings": {
 		"gecko": {
 			"id": "{0902fbb8-b3e0-40fd-b601-efae2840009e}"
 		}
 	},
+	"default_locale": "en",
 	"background": {
 		"{{firefox}}.scripts": ["src/background/background.ts"]
 	}

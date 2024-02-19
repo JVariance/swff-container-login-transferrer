@@ -2,6 +2,28 @@ import Browser from "webextension-polyfill";
 import { BrowserStorage } from "../../Entities";
 import * as API from "@root/browserAPI";
 
+async function removeCookies(domain: string, storeId: string) {
+	const cookies = await Browser.cookies.getAll({
+		// domain: ".www.kleinanzeigen.de",
+		// storeId: "firefox-container-1",
+		domain,
+		storeId,
+	});
+
+	for (let cookie of cookies) {
+		console.log({ cookie });
+		await Browser.cookies.remove({
+			name: cookie.name,
+			storeId,
+			url: `https://${
+				cookie.domain.startsWith(".")
+					? cookie.domain.substring(1)
+					: cookie.domain
+			}${cookie.path}`,
+		});
+	}
+}
+
 async function syncCookie(
 	removed: boolean,
 	cookie: Browser.Cookies.Cookie & { strippedDomain: string },
@@ -184,6 +206,32 @@ export async function menusOnClicked(
 			);
 		} catch (err) {
 			console.error(err);
+		}
+	} else if (menuItemId.toString().startsWith("remove-cookies")) {
+		const action = menuItemId.split("_")[1];
+
+		// const domain = new URL(tab?.url!).hostname.replace("www", "");
+		const domain = new URL(tab?.url!).hostname;
+
+		switch (action) {
+			case "cookies":
+				removeCookies(domain, tab!.cookieStoreId!);
+				break;
+			case "localStorage":
+				Browser.browsingData.removeLocalStorage({
+					hostnames: [domain],
+					cookieStoreId: tab!.cookieStoreId!,
+				});
+				break;
+			case "both":
+				removeCookies(domain, tab!.cookieStoreId!);
+				Browser.browsingData.removeLocalStorage({
+					hostnames: [domain],
+					cookieStoreId: tab!.cookieStoreId!,
+				});
+				break;
+			default:
+				break;
 		}
 	}
 }
