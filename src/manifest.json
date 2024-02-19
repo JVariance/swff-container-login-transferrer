@@ -1,0 +1,40 @@
+{
+	"manifest_version": 2,
+	"name": "SWFF Container Login Transferrer",
+	"version": "0.0.1",
+	"description": "",
+	"icons": {
+		"16": "icon/icon-light.svg",
+		"32": "icon/icon-light.svg",
+		"48": "icon/icon-light.svg",
+		"96": "icon/icon-light.svg",
+		"128": "icon/icon-light.svg",
+		"256": "icon/icon-light.svg"
+	},
+	"{{firefox}}.permissions": [
+		"<all_urls>",
+		"activeTab",
+		"browsingData",
+		"cookies",
+		"contextualIdentities",
+		"menus",
+		"scripting",
+		"sessions",
+		"storage",
+		"tabHide",
+		"tabs"
+	],
+	"commands": {},
+	"{{firefox}}.options_ui": {
+		"page": "src/pages/Options/options.html",
+		"open_in_tab": true
+	},
+	"{{firefox}}.browser_specific_settings": {
+		"gecko": {
+			"id": "{0902fbb8-b3e0-40fd-b601-efae2840009e}"
+		}
+	},
+	"background": {
+		"{{firefox}}.scripts": ["src/background/background.ts"]
+	}
+}
