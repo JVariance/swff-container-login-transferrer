@@ -1,5 +1,4 @@
 import Browser from "webextension-polyfill";
-import { BrowserStorage } from "../../Entities";
 import * as API from "@root/browserAPI";
 
 async function removeCookies(domain: string, storeId: string) {
@@ -67,32 +66,32 @@ export async function menusOnClicked(
 	const menuItemId = _menuItemId.toString();
 
 	if (menuItemId.toString().startsWith("container")) {
-		const sourceContainerName = menuItemId.split("_")[1];
+		const sourceContainerStoreId = menuItemId.split("_")[1];
 		const currentTab = (
 			await API.queryTabs({ active: true, currentWindow: true })
 		).tabs?.at(0);
 
 		if (!currentTab) return;
 		const domain = new URL(currentTab.url!).hostname.replace("www", "");
-		const currentContainer = await Browser.contextualIdentities.get(
-			currentTab.cookieStoreId!
-		);
+
+		const currentContainer =
+			tab?.cookieStoreId === "firefox-default"
+				? { cookieStoreId: "firefox-default" }
+				: await Browser.contextualIdentities.get(currentTab.cookieStoreId!);
+
 		const sourceContainer =
-			sourceContainerName === "firefox-default"
-				? (
-						await Browser.contextualIdentities.query({
-							name: sourceContainerName,
-						})
-				  )?.at(0)
-				: null;
-		const sourceContainerStoreId =
-			sourceContainerName === "firefox-default"
-				? "firefox-default"
-				: sourceContainer?.cookieStoreId;
+			sourceContainerStoreId === "firefox-default"
+				? { cookieStoreId: "firefox-default" }
+				: (await Browser.contextualIdentities.get(sourceContainerStoreId))!;
+		// : null;
+		// const sourceContainerStoreId =
+		// 	sourceContainerId === "firefox-default"
+		// 		? "firefox-default"
+		// 		: sourceContainer?.cookieStoreId;
 
 		console.info({
 			sourceContainerStoreId,
-			sourceContainerName,
+			// sourceContainerId,
 			menuItemId,
 			domain,
 		});
@@ -123,11 +122,21 @@ export async function menusOnClicked(
 
 			// if (!cookies.length) {
 			Browser.runtime.onMessage.addListener(onMessage);
+			const strippedDomain = domain.startsWith(".")
+				? domain.substring(1)
+				: domain;
 			const tab = await Browser.tabs.create({
-				url: `https://${domain}`,
+				url: `https://${strippedDomain}`,
 				active: false,
 				cookieStoreId: sourceContainer?.cookieStoreId,
 			});
+			console.info({
+				url: `https://${strippedDomain}`,
+				tab,
+				sourceContainer,
+				csi: sourceContainer?.cookieStoreId,
+			});
+
 			await Browser.tabs.hide(tab.id!);
 
 			const removalTimer = setTimeout(clearThings, 2000);
@@ -195,15 +204,6 @@ export async function menusOnClicked(
 			// 	await Browser.tabs.reload(currentTab.id!);
 			// }, 3000);
 			// await Promise.all(cookies.map(cookie => syncCookie(false, cookie)));
-
-			console.info("adding to cookieDuplicatedDomains: ", domain);
-
-			const { cookieDuplicatedDomains } =
-				await BrowserStorage.getCookieDuplicatedDomains();
-
-			await BrowserStorage.setCookieDuplicatedDomains(
-				cookieDuplicatedDomains.concat(`${domain}_${sourceContainerStoreId}`)
-			);
 		} catch (err) {
 			console.error(err);
 		}

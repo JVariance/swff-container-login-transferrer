@@ -61,10 +61,12 @@ class TabMenuCookies {
 			},
 		]
 			.concat(containers)
-			.filter(({ name }) => name !== currentContainer?.name)
+			.filter(
+				({ cookieStoreId }) => cookieStoreId !== currentContainer?.cookieStoreId
+			)
 			.forEach((container) => {
 				Browser.menus.create({
-					id: `container-menu_${container.name}`,
+					id: `container-menu_${container.cookieStoreId}`,
 					title: `${container.name}`,
 					contexts: ["tab", "page"],
 					type: "normal",
