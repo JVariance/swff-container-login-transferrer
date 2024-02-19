@@ -83,15 +83,9 @@ export async function menusOnClicked(
 			sourceContainerStoreId === "firefox-default"
 				? { cookieStoreId: "firefox-default" }
 				: (await Browser.contextualIdentities.get(sourceContainerStoreId))!;
-		// : null;
-		// const sourceContainerStoreId =
-		// 	sourceContainerId === "firefox-default"
-		// 		? "firefox-default"
-		// 		: sourceContainer?.cookieStoreId;
 
 		console.info({
 			sourceContainerStoreId,
-			// sourceContainerId,
 			menuItemId,
 			domain,
 		});
@@ -106,13 +100,11 @@ export async function menusOnClicked(
 
 			for (let cookie of cookies) {
 				console.info({ cookie });
-				// if (cookie.storeId !== "firefox-default") return;
 				const { domain } = cookie;
 				const strippedDomain = domain.startsWith(".")
 					? domain.substring(1)
 					: domain;
 				console.info({ strippedDomain });
-				// domains.includes(strippedDomain) && syncCookie(false, { ...cookie, strippedDomain, });
 				await syncCookie(
 					false,
 					{ ...cookie, strippedDomain },
@@ -120,7 +112,6 @@ export async function menusOnClicked(
 				);
 			}
 
-			// if (!cookies.length) {
 			Browser.runtime.onMessage.addListener(onMessage);
 			const strippedDomain = domain.startsWith(".")
 				? domain.substring(1)
@@ -181,9 +172,6 @@ export async function menusOnClicked(
 					).tabs?.at(0);
 
 					if (activeTab) {
-						// const localStorageObject =
-						// 	Object.fromEntries(localStorageEntries);
-
 						await Browser.scripting.executeScript({
 							target: { tabId: activeTab.id! },
 							func: (localStorageEntries: [string, any][]) => {
@@ -199,11 +187,6 @@ export async function menusOnClicked(
 					clearThings();
 				}
 			}
-			// }
-			// setTimeout(async () => {
-			// 	await Browser.tabs.reload(currentTab.id!);
-			// }, 3000);
-			// await Promise.all(cookies.map(cookie => syncCookie(false, cookie)));
 		} catch (err) {
 			console.error(err);
 		}
@@ -215,23 +198,27 @@ export async function menusOnClicked(
 
 		switch (action) {
 			case "cookies":
-				removeCookies(domain, tab!.cookieStoreId!);
+				await removeCookies(domain, tab!.cookieStoreId!);
 				break;
 			case "localStorage":
-				Browser.browsingData.removeLocalStorage({
+				await Browser.browsingData.removeLocalStorage({
 					hostnames: [domain],
 					cookieStoreId: tab!.cookieStoreId!,
 				});
 				break;
 			case "both":
-				removeCookies(domain, tab!.cookieStoreId!);
-				Browser.browsingData.removeLocalStorage({
-					hostnames: [domain],
-					cookieStoreId: tab!.cookieStoreId!,
-				});
+				await Promise.all([
+					removeCookies(domain, tab!.cookieStoreId!),
+					Browser.browsingData.removeLocalStorage({
+						hostnames: [domain],
+						cookieStoreId: tab!.cookieStoreId!,
+					}),
+				]);
 				break;
 			default:
 				break;
 		}
+
+		Browser.tabs.reload(tab!.id!);
 	}
 }
