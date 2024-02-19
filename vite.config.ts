@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import { enhancedImages } from "@sveltejs/enhanced-img";
 import webExtension, { readJsonFile } from "vite-plugin-web-extension";
 
 function generateManifest() {
@@ -32,16 +31,12 @@ export default defineConfig({
 		// drop: ["console", "debugger"],
 	},
 	plugins: [
-		enhancedImages(),
 		svelte(),
 		webExtension({
 			manifest: generateManifest,
 			browser: "firefox",
 			watchFilePaths: ["package.json", "manifest.json"],
-			additionalInputs: [
-				"src/pages/Welcome/welcome.html",
-				"src/pages/Welcome/welcome.ts",
-			],
+			additionalInputs: [],
 			webExtConfig: {
 				startUrl: "https://excalidraw.com",
 			},
