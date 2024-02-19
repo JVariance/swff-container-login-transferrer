@@ -1,4 +1,4 @@
-# <img src="https://github.com/JVariance/Simple-Workspaces/blob/bbd5e2be74091584fc8df4b52ea96f5e3358f24d/public/icon/icon-light.svg" width="64"/><br/> Simple Workspaces
+# <img src="https://github.com/JVariance/Simple-Workspaces/blob/bbd5e2be74091584fc8df4b52ea96f5e3358f24d/public/icon/icon-light.svg" width="64"/><br/> SWFF Container Login Transferrer
 
 > currently in development - not available via extension store
 
